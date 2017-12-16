@@ -1,0 +1,28 @@
+/*style declarations*/
+h1 {
+background-color:#CCCCFF;
+color:#330000;
+padding:2%;
+}
+.note {
+font-style:italic;
+}
+#conclusion {
+color:#000033;
+}
+div p {
+color:#006600;
+}
+div {
+float:left;
+}
+.edit{
+}
+a:link { color:#330000; }
+a:visited { color:#003333; }
+a:hover { color:#000033; }
+a:active { color:#330033; }
+a:link, a:visited, a:hover, a:active {
+text-decoration:none;
+font-weight:bold;
+}

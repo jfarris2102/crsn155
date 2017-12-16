@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="basic.css">
+<title>My Page</title>
+<audio controls id="song">
+    <source id="mp3_src" src="The Uncluded - Teleprompters.mp3" type="audio/mpeg">
+</audio>
+<button type="button" id="skip" onclick="toggleMusic(this.id)">Next</button>
+<script>
+
+var editing;
+var edit_id = "";
+var sections = 5;
+var edited = {}; 
+var additionTo = {};
+var editInput = document.createElement("TEXTAREA");
+var submit = document.createElement("BUTTON");
+var cancel = document.createElement("BUTTON");
+var enable = document.createTextNode("Enable Sound!");
+var disable = document.createTextNode("Disable Sound!");
+
+var songs = ["Pat The Bunny - You heart is a muscle the size of your fist.mp3", "Mal Blum - Fine!.mp3", "The Uncluded - Teleprompters.mp3"];
+var nextTrack = 0;
+var player = document.getElementById("song");
+
+submit.setAttribute("id","submit");
+submit.appendChild(document.createTextNode("Update Section"));
+cancel.setAttribute("id","cancel");
+cancel.appendChild(document.createTextNode("Cancel"));
+
+var original = {};
+editInput.setAttribute("type","text");
+editInput.setAttribute("id","edit");
+editInput.setAttribute("class","edit");
+
+var playing = false;
+
+function elementClicked(theElem){
+	if (edit_id != ""){
+	    editing.style.backgroundColor="#FFFFFF";
+	}
+	editing = document.getElementById(theElem);
+	edit_id = theElem;
+	inElement(edit_id);
+
+	//This element has not been edited before
+	if (!(theElem in edited)) {
+		original[theElem] = editing.innerHTML;
+		edited[theElem] = true;
+		editInput.value = "";
+		additionTo[theElem] = editInput.value;
+	}else {
+		editInput.value = additionTo[theElem];
+	}
+	var parent = editing.parentNode;
+	parent.insertBefore(cancel,editing.nextSibling);
+	parent.insertBefore(editInput, cancel);	
+	parent.insertBefore(submit, cancel);
+	submit.onclick = function() {
+		additionTo[theElem] = editInput.value + "";
+		editing.innerHTML = original[theElem] + "<br>" + additionTo[theElem];
+		console.log("Text: "+editing.innerHTML);
+		parent.removeChild(editInput);
+		parent.removeChild(submit);
+		parent.removeChild(cancel);
+		edit_id = "";
+		offElement(theElem);
+	}
+	cancel.onclick = function() {
+		parent.removeChild(editInput);
+		parent.removeChild(submit);
+		parent.removeChild(cancel);
+		edit_id = "";
+		offElement(theElem);
+	}
+	editInput.onkeydown = function(e) {
+		if (e.keyCode == 13){
+			editInput.value = editInput.value + "<br>";
+		}
+	}
+
+}
+function elem_update(){
+	editing.innerHTML = original + "<br>" + editInput.value;
+	console.log("Text: "+editing.innerHTML);
+	parent.removeChild(editInput);
+}
+function overElement(theElem){
+	if (theElem in edited && edit_id == theElem) return;
+	document.getElementById(theElem).style.backgroundColor="#99CCCC";
+}
+function offElement(theElem){
+	if (theElem in edited && edit_id == theElem) return;
+	document.getElementById(theElem).style.backgroundColor="#FFFFFF";
+}
+function inElement(theElem){
+	document.getElementById(theElem).style.backgroundColor="#CC9999";
+}
+function toggleMusic(){
+	document.getElementById("mp3_src").src = songs[nextTrack];
+	nextTrack < 2 ? nextTrack++ : nextTrack = 0;
+	player.load();
+	player.play();
+}
+player.onplay = function() {
+	playing = true;
+}
+player.onpause = function() {
+	playing = false;
+}
+player.onended = function() {
+	document.getElementById("mp3_src").src = songs[nextTrack];
+	nextTrack < 2 ? nextTrack++ : nextTrack = 0;
+	player.load();
+	if (playing) player.play();
+}
+
+
+
+</script>
+</head>
+<body>
+<!--page content-->
+<h1>My Page</h1>
+
+
+<p class="note" id="first">
+This is some text.
+</p>
+<div class="note">
+This some more text.
+</div>
+<div id="conclusion" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">
+This is even more text.
+</div>
+<div>
+<p id="myP" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)"
+    onmouseout="offElement(this.id)">
+This is yet more text.
+</p>
+</div>
+</body>
+</html>
