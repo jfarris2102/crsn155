@@ -1,28 +1,96 @@
 /*style declarations*/
+head {
+	align-items:center;
+}
+audio {
+	position:fixed;
+	width:97%;
+	display:block;
+	margin:auto;
+	align-content: center;
+	box-shadow: 2px 2px 5px 10px #000000;
+}
 h1 {
-background-color:#CCCCFF;
-color:#330000;
-padding:2%;
+	background-color:#CCCCFF;
+	color:#330000;
+	padding:2%;
+	text-align:center;
+	/*padding-left: 20px;*/
+}
+#first {
+	padding-top:50px;
+}
+#pref {
+	width:80%;
+	margin:auto;
+}
+h2 {
+	color:#002A00;
+	padding: 2%;
+	background-color:#88CC66;
+}
+h4.fill {
+}
+input[type="text"] {
+	background-color: #CCCC99;
+}
+textarea {
+	display: block;
+	padding: 20px 5px;
+	width: 90%;
+	margin:auto;
+	height: 200px;
+	background-color: #CCCCFF;
+	//border:solid 2px #88CC66;
+}
+textarea.edit{
+	padding-top: 20px;
+	background-color: #CC9999;
+}
+button.fill {
+	display: block;
+
+	margin: auto;
+}
+button {
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+button.edit {
+	display: block;
+	margin: auto;
 }
 .note {
-font-style:italic;
+	font-style:italic;
 }
-#conclusion {
-color:#000033;
+.main {
+	color:#000033;
+	line-height: 200%;
 }
-div p {
-color:#006600;
-}
+/*div p {
+	color:#006600;
+}*/
 div {
-float:left;
+	//float:left;
 }
-.edit{
+li.comment {
+	list-style-type: none;
+}
+[class="comment"] {
+	text-decoration: bold;
+	list-style-type: none;
+}
+[class="commented"] {
+	text-decoration: underline;
+}
+p.org {
+	text-align: center;
 }
 a:link { color:#330000; }
 a:visited { color:#003333; }
 a:hover { color:#000033; }
 a:active { color:#330033; }
 a:link, a:visited, a:hover, a:active {
-text-decoration:none;
-font-weight:bold;
+	text-decoration:none;
+	font-weight:bold;
 }

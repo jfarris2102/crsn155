@@ -2,11 +2,14 @@
 <html>
 <head>
 <link rel="stylesheet" type="text/css" href="basic.css">
-<title>My Page</title>
-<audio controls id="song">
+<title>Not a Manifesto</title>
+<audio controls autoplay id="song">
     <source id="mp3_src" src="The Uncluded - Teleprompters.mp3" type="audio/mpeg">
 </audio>
-<button type="button" id="skip" onclick="toggleMusic(this.id)">Next</button>
+<script>
+    
+</script>
+<!--button type="button" id="skip" onclick="toggleMusic(this.id)">Next</button><br-->
 <script>
 
 var editing;
@@ -20,19 +23,33 @@ var cancel = document.createElement("BUTTON");
 var enable = document.createTextNode("Enable Sound!");
 var disable = document.createTextNode("Disable Sound!");
 
+var tag = 7;
+
+var comment = "<span class='comment' ";
+var commented = "<span class='commented' ";
+
 var songs = ["Pat The Bunny - You heart is a muscle the size of your fist.mp3", "Mal Blum - Fine!.mp3", "The Uncluded - Teleprompters.mp3"];
 var nextTrack = 0;
 var player = document.getElementById("song");
 
+var skip = document.getElementById("skip");
+player.setAttribute("title",songs[songs.length-1]);
+//player.style.width = window.innerWidth+"px";
+player.volume = .1;
+
+
 submit.setAttribute("id","submit");
-submit.appendChild(document.createTextNode("Update Section"));
+submit.appendChild(document.createTextNode("Comment/Problematize"));
 cancel.setAttribute("id","cancel");
 cancel.appendChild(document.createTextNode("Cancel"));
+submit.setAttribute("class","edit");
+cancel.setAttribute("class","edit");
 
 var original = {};
 editInput.setAttribute("type","text");
 editInput.setAttribute("id","edit");
 editInput.setAttribute("class","edit");
+//editInput.style.width = (window.innerWidth-85)+"px";
 
 var playing = false;
 
@@ -54,16 +71,44 @@ function elementClicked(theElem){
 		editInput.value = additionTo[theElem];
 	}
 	var parent = editing.parentNode;
-	parent.insertBefore(cancel,editing.nextSibling);
+	//if (editing.id == parent.lastElementChild)
+	parent.insertBefore(cancel,editing.nextElementSibling);
 	parent.insertBefore(editInput, cancel);	
 	parent.insertBefore(submit, cancel);
 	submit.onclick = function() {
+		editing.class = "commented";
+		var rgb = "rgb(";
+		var rgba = "rgba(";
+		var too_light = true;
+		while(too_light){
+			var r = Math.floor(Math.random()*255);
+			var g = Math.floor(Math.random()*255);
+			var b = Math.floor(Math.random()*255);
+			if (Math.abs(r-g) < 40 || Math.abs(g-b) < 40 || Math.abs(r-b) < 40){
+				too_light = true;
+			}else {
+				too_light = false;
+			}
+		}
+		var clr = r+","+g+","+b;
+		var style = "style='background-color:"+rgba+clr+",0.25)'";
+		var style1 = "style='color:"+rgb+clr+")'";
+		console.log(clr);
+		editing.style.textDecorationColor = clr;
 		additionTo[theElem] = editInput.value + "";
-		editing.innerHTML = original[theElem] + "<br>" + additionTo[theElem];
+		editing.innerHTML = commented+style+">"+original[theElem]+"</span>";//+ comment+style1+">*"+" </span>";
 		console.log("Text: "+editing.innerHTML);
+		var comments = parent.lastElementChild; //the comment section
+		console.log(comments.id);
+		var newComment = document.createElement("LI");
+		newComment.setAttribute("class","comment");
+	//	newComment.setAttribute("style","color:"+rgb+clr+")");
+		newComment.innerHTML = "<span "+style+">Comment: </span>"+additionTo[theElem];
+		//document.getElementsByClassName("comment").style.color = clr;
 		parent.removeChild(editInput);
 		parent.removeChild(submit);
 		parent.removeChild(cancel);
+		comments.appendChild(newComment);
 		edit_id = "";
 		offElement(theElem);
 	}
@@ -76,19 +121,25 @@ function elementClicked(theElem){
 	}
 	editInput.onkeydown = function(e) {
 		if (e.keyCode == 13){
-			editInput.value = editInput.value + "<br>";
+			//editInput.value = editInput.value + "<br>";
 		}
 	}
 
 }
 function elem_update(){
-	editing.innerHTML = original + "<br>" + editInput.value;
+	editing.innerHTML = original + editInput.value;
 	console.log("Text: "+editing.innerHTML);
 	parent.removeChild(editInput);
 }
 function overElement(theElem){
+	var elem = document.getElementById(theElem);
 	if (theElem in edited && edit_id == theElem) return;
-	document.getElementById(theElem).style.backgroundColor="#99CCCC";
+	var c = "#99CCCC"
+	if (elem.className == "song"){ 
+		c = "#FF9999";
+		console.log("art");
+	}
+	elem.style.backgroundColor=c;
 }
 function offElement(theElem){
 	if (theElem in edited && edit_id == theElem) return;
@@ -97,8 +148,10 @@ function offElement(theElem){
 function inElement(theElem){
 	document.getElementById(theElem).style.backgroundColor="#CC9999";
 }
-function toggleMusic(){
-	document.getElementById("mp3_src").src = songs[nextTrack];
+function toggleMusic(trackid){
+	document.getElementById("mp3_src").src = songs[trackid];
+	player.setAttribute("title",songs[trackid]);
+	nextTrack = trackid;
 	nextTrack < 2 ? nextTrack++ : nextTrack = 0;
 	player.load();
 	player.play();
@@ -111,9 +164,115 @@ player.onpause = function() {
 }
 player.onended = function() {
 	document.getElementById("mp3_src").src = songs[nextTrack];
+	player.setAttribute("title",songs[nextTrack]);
 	nextTrack < 2 ? nextTrack++ : nextTrack = 0;
 	player.load();
 	if (playing) player.play();
+}
+
+function addToList(theElem) {
+	var inputField = document.getElementById(theElem).previousElementSibling;
+
+	console.log(inputField.id)
+
+	if (inputField.value == "") return;
+
+	var list = inputField.parentNode.parentNode;
+	console.log(list.id);
+	var newItem = document.createElement("LI");
+	newItem.id = "list"+tag;
+	tag++;
+	
+	newItem.innerHTML = inputField.value;
+	inputField.value = "";
+
+	console.log(newItem);
+
+	list.insertBefore(newItem,inputField.parentNode);
+
+    newItem.onmouseover = function(){overElement(newItem.id)};
+	newItem.onmouseout = function(){offElement(newItem.id)};
+	
+	newItem.onclick = function(){elementClicked(newItem.id)};
+
+	console.log(newItem);
+	
+}
+
+function newPost(theElem) {
+	var inputField = document.getElementById(theElem).previousElementSibling;
+
+	console.log(inputField.id)
+
+	if (inputField.value == "") return;
+
+	var parent = inputField.parentNode;
+	console.log(parent.id);
+	var newItem = document.createElement("P");
+	newItem.id = "p"+tag;
+	tag++;
+	
+	newItem.innerHTML = inputField.value;
+	inputField.value = "";
+
+	console.log(newItem);
+
+	parent.insertBefore(newItem,inputField);
+
+    newItem.onmouseover = function(){overElement(newItem.id)};
+	newItem.onmouseout = function(){offElement(newItem.id)};
+	
+	newItem.onclick = function(){elementClicked(newItem.id)};
+
+	console.log(newItem);
+}
+function addCateg(theElem) {
+	var inputField = document.getElementById(theElem).previousElementSibling;
+	if (inputField.value == "") return;
+	var parent = inputField.parentNode;
+	var newHead = document.createElement("H4");
+	var newParent = document.createElement("P");
+	var newItem = document.createElement("TEXTAREA");
+	var newButt = document.createElement("BUTTON");
+	var newComm = document.createElement("UL");
+
+	newHead.innerHTML = inputField.value;
+	newHead.setAttribute("class","fill");
+	newHead.setAttribute("id",inputField.value);
+	newButt.setAttribute("type","button");
+	newButt.setAttribute("id", "fill"+tag);
+	newButt.setAttribute("class","fill");
+	newComm.setAttribute("class","comment");
+	newButt.innerHTML = "Add";
+
+	
+
+	//newItem.id = "p"+tag;
+	tag++;
+	
+	inputField.value = "";
+
+	console.log(newItem);
+
+	parent.insertBefore(newParent,inputField);
+	parent.insertBefore(newHead,newParent);
+	newParent.appendChild(document.createElement("SPAN").appendChild(newComm));
+	newParent.insertBefore(newButt, newParent.lastElementChild);
+	newParent.insertBefore(newItem,newButt);
+
+	newButt.onclick = function(){newPost(newButt.id);};
+
+	console.log(newItem);
+}
+window.onresize = function() {
+	player.style.width = window.innerWidth+"px";
+	//editInput.style.width = (window.innerWidth-85)+"px";
+	console.log(window.innerWidth);
+	var fills = document.getElementsByTagName("textarea");
+
+	for (var i=0; i < fills.length; i++){
+		//fills[i].style.width = (window.innerWidth - 85)+"px";
+	}
 }
 
 
@@ -122,23 +281,142 @@ player.onended = function() {
 </head>
 <body>
 <!--page content-->
-<h1>My Page</h1>
+<div id="first">
+<h1>Not a Manifesto</h1>
+<div id="pref">Preface: Almost everything on this page can be "problematized" or commented-on when clicked, and new content can be added. For now, this is on a free shared hosting service which doesn't allow new content to be permanently saved to the server; but you can still <a href="index.html" download="NotAManifesto.html">save this page</a>, and share the file with others (when they open it, it will open in the browser). If you'd like to permanently update content and know even a little coding (or none!), look at the learning section for some tutorials. If you aren't comfortable learning this on your own, you can also email your saved file to <a target="_blank" href="">jpfarris@ucsc.edu</a> and they can incorporate your changes for you. The full site is coming soon!
+</div>
+<p id="intro" class="main">
+	<span id="m1" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">Throughout history, people have written manifestos as a way of outlining their vision for the future. This is a valuable practice and some very brilliant people have shared their ideas with the world in this way. </span><span id="m2" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)"> However, the manifesto is inherently biased. No matter how brilliant or observant its creator(s), they are one person (or a small group) with a limited set of personal concerns and life experiences. </span><span id="m3" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)"> We still need a mechanism like the manifesto, to unite people under a single banner and give movements structure. But in this day and age the traditional manifesto serves to alienate some potential participants from the cause, while generally falling short in its scope. </span><span id="m4" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)"> The problems the world faces are complex, ingrained in global systems, far-reaching, and intertwined; yet distinct in how they affect each member of our family. Thus, they require intense communication between individuals and communities to fully outline them, their complexities, and favored solutions/alternatives. </span><span id="m5" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)"> After all, sustainability is ultimately about maintaining balance; between resource consumption and renewal, but also in terms of global access to resources and technology. Equality is the basis of equilibrium, so any sustainable future must be determined by the voices of all and shaped by each of their needs. </span>
+	<span>
+	<ul class="comment"></ul></span>
+</p>
+<p class="main">
+	<span id="m6" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">This document doesn't achieve this. However, it does provide a space to meditate on that idea, practice it, and imagine better ways to achieve it.</span><span id="m7" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)"> It is a place where students of CRSN 55, the Sustainability Minor, and others can share resources, ideas, and inspirations.</span><span id="m8" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)"> It is a living document where people can remind each other why we hope, why we doubt, and what we can do.</span><span id="m9" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)"> It is a virtual and interactive representation of the kind of engagement you might experience in this course and why that engagement is beneficial.</span> 
+	<span>
+	<ul class="comment"></ul></span>
+</p>
+<h4>Skills Developed in Class</h4>
+<ul id="skills" class="main">
+	<li id="s1" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">Problematizing arguments: When considering someone's statements, always think about these kinds of questions: Is there a group being ignored? Was a fallacy employed? Is there an assumption somewhere out of place?</li>
+	<li id="s2" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">Listening: In order to problematize or support someone's argument, you need to make sure you fully understand it. Sometimes this means asking questions, sometimes this means staying silent until you feel comfortable chiming in</li>
+	<li id="s3" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">Sharing knowledge: People come from many departments and majors to take this course, and everyone has a different set of skills - but all are useful and can be applied to sustainability in some way. Take advantage of this opportunity to exercise your skills by educating others.</li>
+	<li id="s4" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">Acquiring knowledge: This goes hand-in-hand with the previous. You'll get a chance in this course to absorb knowledge from other disciplines that you might not encounter otherwise. This will help you expand how you think about your own discipline and new ways to combine them for the greater good.</li>
+	<li id="s5" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">Communication: This combination of disciplines will allow you to train yourself in the language of other disciplines. This can also make you more effective at communication in general as your mind exercises its ability to absorb new modes of thought and perspectives.</li> 
+	<li id="last"><input id="reason" type="text"/><button type="button" id="skill1" onclick="addToList(this.id)">Add</button></li>
+	<span>
+	<ul class="comment"></ul></span>
+</ul>
+<h4>Skills Developed in Internships</h4>
+<ul class="main">
+	<li id="s6" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">Humility: You are in these internships to provide a service. You might find it unrewarding or unpleasant - but you will end up needing to respect the work you're doing and be willing to sacrifice the time.</li>
+	<li id="s7" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">People skills: Depending on your internship you will meet many different kinds of people in different situations, and will get to practice interacting with them.</li>
+	<li id="s8" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">Job Training: These internships teach you lots of real-world skills, which could be applicable in your career. Others might just come in handy with DIY projects.</li> 
+	<li id="s9" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">Collaboration: You'll have to work together with people in your internship. You might get a close look at how organizations are run. Pay close attention because you can learn about how to foster the collaboration and coordination needed to make these organizations successful. You will at least get practice working with people you don't know on an issue you might not be familiar with.</li>
+	<li><input type="text"/><button type="button" id="skill2" onclick="addToList(this.id)">Add</button></li>
+	<span>
+	<ul class="comment"></ul></span>
+</ul>
+<p class="main">
+	<span id="m10" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">
+	People in this course will find themselves at varying levels of optimism and passion for sustainability. Some might deny the existence of the issues covered, or at least deny the fact we can do anything about them. Others might not think they really apply to them or their intended career.</span><span id="m11" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)"> But no matter what you plan to do in life, these issues could very well affect your world in an extremely meaningful way. If not, you will likely witness drastic changes occurring in the world in general.</span><span id="m12" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)"> The issues covered here will be on the forefront of social consciousness whether you like it or not (in many ways they already are).</span> <span id="m13" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">Knowing this, we have a responsibility to prepare ourselves to face those issues and ensure the world approaches them in a fair and equitable way.</span><span id="m14" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">This responsibility is crushing: the world is so complex and the task we have as a generation is extremely daunting. It is easy to become frustrated and lose hope. Here are some comments on hope, and a space for more.</span>
+	<span>
+	<ul class="comment"></ul></span>
+</p>
+
+<h4>Messages on Hope</h4>
+<ul class="main">
+	<li id="s10" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">Listen to the songs on this page (add your own below) </li>
+	<li id="s11" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">Remind yourself of the positive consequences of 45's election. The #MeToo movement, Bernie Sanders' OurRevolution, and the surge in political awareness amongst younger people are all in some way results of or responses to that. </li>
+	<li id="s12" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)"> Nonviolent civil resistance works! <br>
+	<iframe width="560" height="315" src="https://www.youtube.com/embed/YJSehRlU34w?rel=0" frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen></iframe>
+	<br><span style="font-style:italic">"no campaigns failed once they'd achieved the active and sustained participation of just 3.5% of the population."</li>
+	<li id="s13" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">You have a community here if you let yourself and others in </li>
+	<li><input type="text"/><button type="button" id="hope" onclick="addToList(this.id)">Add</button></li>
+	<span>
+	<ul class="comment"></ul></span>
+</ul>
+<p class="main">
+	<span id="m15" class="m" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">
+	Finally, I'd like to end this with an open-ended exercise in envisioning a sustainable future. I have listed the major categories of human needs and activities (you can add more). Under each one, you are free to use the space however you wish. Talk about how the systems that fulfill that need today are problematic. Describe how you see that need being fulfilled in a sustainable world. Think in terms of global systems, communities, or personal life.</span>
+	<span>
+	<ul class="comment"></ul></span>
+</p>
+<h4 class="fill" id="food"> Food </h4>
+<p>
+<textarea></textarea><button type="button" id="fill1" class="fill"onclick="newPost(this.id)">Add</button>
+<span><ul class="comment"></ul></span>
+</p>
+<h4 class="fill" id="water"> Water </h4>
+<p>
+<textarea></textarea><button type="button" id="fill2" class="fill"onclick="newPost(this.id)">Add</button>
+<span><ul class="comment"></ul></span>
+</p>
+<h4 class="fill" id="house"> Housing </h4>
+<p>
+<textarea></textarea><button type="button" id="fill3" class="fill"onclick="newPost(this.id)">Add</button>
+<span><ul class="comment"></ul></span>
+</p>
+<h4 class="fill" id="energy"> Energy </h4>
+<p>
+<textarea></textarea><button type="button" id="fill4" class="fill"onclick="newPost(this.id)">Add</button>
+<span><ul class="comment"></ul></span>
+</p>
+<h4 class="fill" id="transp"> Transportation </h4>
+<p>
+<textarea></textarea><button type="button" id="fill5" class="fill"onclick="newPost(this.id)">Add</button>
+<span><ul class="comment"></ul></span>
+</p>
+<input type="text"/><button type="button" id="fill6" onclick="addCateg(this.id)">Add Category</button>
+<span><ul class="comment"></ul></span>
 
 
-<p class="note" id="first">
-This is some text.
+
+
+<h2>Art</h2>
+
+<body>
+Art is integral to any movement. Here you can find the track listing for this page, and upload your own songs to listen to. You can also post other art - whatever inspires you and gives you hope.<br><br>
+Track Listing (click to play that song): <br><br>
+<span id="2" onclick="toggleMusic(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)" class="song">The Uncluded - Teleprompters</span><br>
+<span id="0" onclick="toggleMusic(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)" class="song">Pat The Bunny - Your heart is a muscle the size of your fist</span><br>
+<span id="1" onclick="toggleMusic(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)" class="song">Mal Blum - Fine!</span><br><br>
+
+<button type="button" id="fill6" onclick="">Add Art</button>
+</body>
+<h2>Learning</h2>
+<body>
+A place to post links to useful articles, videos, tutorials, and other resources. Use this space to share your skills with others, or attempt to learn a skill outside of your comfort zone.<br>
+<p><a href="https://www.youtube.com/watch?v=-USAeFpVf_A&t=10s">HTML Tutorial</a> - Learn the basics of HTML so you can edit webpage code</p>
+<p><a href="https://www.youtube.com/watch?v=BCQHnlnPusY">GitHub Tutorial</a> - Learn how to use GitHub (a website that is sort of like "Google Docs" for code) so you can submit code changes to someone's project (including this one!)</p>
+<p><a href="http://faculty.webster.edu/corbetre/philosophy/education/freire/freire-2.html"><span style="font-style: italic">Pedagogy of the Oppressed</span>, Chapter 2</a> - An excerpt from Paulo Freire's 1968 text, the quintessential CRSN 55 resource</p>
+<br>
+<button type="button" id="fill6" onclick="">Add Resource</button>
+</body>
+<h2>Organizations</h2>
+<body>
+A running list of (local) organizations which support the community and need people like you to volunteer and donate. Most also hold workshops and other events that could benefit you, or offer zines and other resources on their website. 
+<p id="org1" class="org" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">
+	<a target="_blank" class="org" href="https://santacruz.foodnotbombs.net/">Food Not Bombs</a>
 </p>
-<div class="note">
-This some more text.
-</div>
-<div id="conclusion" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">
-This is even more text.
-</div>
-<div>
-<p id="myP" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)"
-    onmouseout="offElement(this.id)">
-This is yet more text.
+<p id="org2" class="org" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">
+	<a target="_blank" class="org" href="https://santacruz.foodnotbombs.net/">Homeless Garden Project</a>
 </p>
+<p id="org3" class="org" class="org" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">
+	<a target="_blank" class="org" href=https://www.facebook.com/Computer-Kitchen-225813413682/>Computer Kitchen</a>
+</p>
+<p id="org4" class="org" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">
+	<a target="_blank" class="org" href=http://www.subrosaproject.org/>SubRosa</a>
+</p><br>
+<button type="button" id="fill6" onclick="">Add Organization</button>
+<span><ul class="comment"></ul></span>
+</body>
+<!--h2 style="font-style: italic;" id="add" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">Add your own...</h2>
+<p id="cu1" onclick="elementClicked(this.id)" onmouseover="overElement(this.id)" onmouseout="offElement(this.id)">
+	This is yet more text.-->
+
 </div>
 </body>
+
+
+
 </html>
